@@ -21,8 +21,7 @@ class OrderPolicy
      */
     public function viewAny(User $user)
     {
-        $permission = 'orders.viewAny';
-
+        $permission = 'orders.viewAny'; //echo $this->checkRole($permission); die;
         return $this->checkRole($permission) === $permission;
     }
 
@@ -106,8 +105,11 @@ class OrderPolicy
     }
 
     private function checkRole($permission){ //dd($permission);
-        return $role = Role::with(['permissions' => function($q) use ($permission) {
-                $q->where('name', $permission);
-            }])->where('id', Auth::id())->first()->permissions[0]->name ?? NULL;
+            return User::where('id', Auth::id())
+                ->with(['role' => function($q) use ($permission){
+                    $q->with(['permissions' => function($q) use ($permission) {
+                        $q->where('name', $permission);
+                    }]);
+                }])->first()->role->permissions[0]->name ?? NULL;
     }
 }
