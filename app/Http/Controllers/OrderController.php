@@ -73,13 +73,14 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                 ]
             );
+            dispatch(new \App\Jobs\ProcessSendMail($request->email));
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::info($e);
         }
-        dispatch(new \App\Jobs\ProcessSendMail($request->email));
+
 
         return redirect()->route('orders.index');
     }
