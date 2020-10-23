@@ -27,10 +27,11 @@ class Role extends Model
 
     public function createByArr($arr)
     {
-        $this->create($arr);
+        $role = $this->first();
+        $id = $this->create($arr)->id;
 
-        if($this->first()){
-            $user = User::find(Auth::id())->update(['role_id' => $this->first()->id]);
+        if(!$role){
+            $user = User::find(Auth::id())->update(['role_id' => $id]);
         }
 
         return true;
